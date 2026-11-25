@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cloud Status Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 50px auto; padding: 0 20px; }
+    .card { border: 1px solid #ccc; border-radius: 8px; padding: 20px; margin-top: 20px; }
+    input { padding: 8px; font-size: 14px; }
+    button { padding: 8px 14px; font-size: 14px; cursor: pointer; }
+    pre { background: #f4f4f4; padding: 12px; border-radius: 6px; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <h1>Cloud Status Dashboard</h1>
+  <p>Frontend on <strong>Amazon S3</strong> connected to <strong>AWS Lambda &amp; API Gateway</strong> in Sydney (<code>ap-southeast-2</code>).</p>
+
+  <div class="card">
+    <input id="nameInput" type="text" value="Intern" placeholder="Enter name" />
+    <button onclick="callBackend()">Call Live API</button>
+    <pre id="responseBox">Click "Call Live API" to fetch data...</pre>
+  </div>
+
+  <script>
+    const API_URL = "https://q0p2diqr1b.execute-api.ap-southeast-2.amazonaws.com/default/status-backend-api";
+
+    async function callBackend() {
+      const user = encodeURIComponent(document.getElementById("nameInput").value || "Intern");
+      const box = document.getElementById("responseBox");
+      box.textContent = "Loading...";
+      try {
+        const res = await fetch(`${API_URL}?user=${user}`);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        box.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        box.textContent = `Request failed: ${err.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
